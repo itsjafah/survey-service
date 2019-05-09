@@ -3,8 +3,12 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "engines": {
+    "node": "11.10.0",
+    "npm": "6.7.0"
+  },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node index.js"
   },
   "author": "",
   "license": "ISC",
@@ -12,3 +16,6 @@
     "express": "^4.16.4"
   }
 }
+
+/* added engines */
+/* changed scripts to contain key value pair currently shown */

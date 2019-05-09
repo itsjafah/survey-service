@@ -16,6 +16,3 @@
     "express": "^4.16.4"
   }
 }
-
-/* added engines */
-/* changed scripts to contain key value pair currently shown */

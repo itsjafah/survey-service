@@ -4,15 +4,27 @@ const passport = require("passport");
 const GoogleStrategy = require("passport-google-oauth20").Strategy;
 // GoogleStrategy instructs passport how to handle authentication requests specifically for Google
 const app = express();
+const keys = require("./config/keys");
+// import this so we can pass these keys to the GoogleStrategy so that it can properly identify our app to the Google OAUTH API
 
 // passport.use is like a generic register. We pass the GoogleStrategy in as a parameter since that is the specific authentication we are making in this case.
 
 // the new GoogleStrategy constructor function below creates a new instance of the google passport Strategy. Essentially it tells the app to authenticate users with google. We pass a parameter to the function that instructs the GoogleStrategy how to authenticate users in our application.
 
-// client ID 566592909212-ppkh07mf9g3fpruhg5tvp67sei6gv8cg.apps.googleusercontent.com
-// client secret IIfe7Knftuw0YVrr5ODpmf7z
+// the third property in the object we pass to GoogleStrategy, callbackURL, is the route that the user will be sent to after they grant permission (give consent) to login to our app with Google
 
-passport.use(new GoogleStrategy());
+passport.use(
+  new GoogleStrategy(
+    {
+      clientID: keys.googleClientID,
+      clientSecret: keys.googleClientSecret,
+      callbackURL: "/auth/google/callback"
+    },
+    accessToken => {
+      console.log(accessToken);
+    }
+  )
+);
 
 // below is an example of a route handler with express
 

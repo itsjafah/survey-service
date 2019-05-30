@@ -9,9 +9,11 @@ const keys = require("./config/keys");
 
 // passport.use is like a generic register. We pass the GoogleStrategy in as a parameter since that is the specific authentication we are making in this case.
 
-// the new GoogleStrategy constructor function below creates a new instance of the google passport Strategy. Essentially it tells the app to authenticate users with google. We pass a parameter to the function that instructs the GoogleStrategy how to authenticate users in our application.
+// the new GoogleStrategy constructor function below creates a new instance of the google passport Strategy. Essentially it tells the app to authenticate users with google. We pass configuration options as a parameter to the function that instructs the GoogleStrategy how to authenticate users in our application.
 
 // the third property in the object we pass to GoogleStrategy, callbackURL, is the route that the user will be sent to after they grant permission (give consent) to login to our app with Google
+
+// the accessToken function sends back information about the user and allows us to store them in our database. the accessToken itself idenditifies the user.
 
 passport.use(
   new GoogleStrategy(
@@ -20,11 +22,26 @@ passport.use(
       clientSecret: keys.googleClientSecret,
       callbackURL: "/auth/google/callback"
     },
-    accessToken => {
-      console.log(accessToken);
+    (accessToken, refreshToken, profile, done) => {
+      console.log("accessToken", accessToken);
+      console.log("refreshToken", refreshToken);
+      console.log("profile", profile);
     }
   )
 );
+
+// the route handler below tells express to involve Passport. It will send the user to Passport, where they will be entered into the authentication flow. NOTE: the GoogleStrategy constructor has an embedded identifier that we don't see called 'google'. That is why were able to pass 'google' to the passport.authenticate function in the app.get method below.
+
+// the scope argument specifies to google (google servers) what access we want to have inside of this user's profile. Below, we are asking for the profile info and their email. Google has a list of different scopes/permissions we could ask for (like contact list, images in google drive accounts, read all of their emails, etc).
+
+app.get(
+  "/auth/google",
+  passport.authenticate("google", { scope: ["profile", "email"] })
+);
+
+// the route handler below is executed after we have the url code that identifies the user after they have given their consent to use the app. It sees this code and knows that it's not the first attempt to authenticate. GoogleStrategy is going to handle the request differently. It won't kick the user into the OAUTH flow, instead it will exchange the code for the actual user profile.
+
+app.get("/auth/google/callback", passport.authenticate("google"));
 
 // below is an example of a route handler with express
 
